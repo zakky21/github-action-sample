@@ -34,7 +34,10 @@ jobs:
         echo ${GITHUB_REF}
         if [ "workflow_dispatch" = ${GITHUB_EVENT_NAME} ]; then
           echo "workflow_dispatch!!!"
+          GITHUB_REF="replaced-path"
         fi
         if [ "schedule" = ${GITHUB_EVENT_NAME} ]; then
           echo "schedule!!!"
+          GITHUB_REF="replaced-path"
         fi
+        echo ${GITHUB_REF}
