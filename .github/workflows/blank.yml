@@ -31,3 +31,4 @@ jobs:
         echo ${GITHUB_ACTIONS}
         echo ${GITHUB_ACTOR}
         echo ${GITHUB_REPOSITORY}
+        echo ${GITHUB_REF}
