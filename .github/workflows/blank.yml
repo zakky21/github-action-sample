@@ -32,3 +32,9 @@ jobs:
         echo ${GITHUB_ACTOR}
         echo ${GITHUB_REPOSITORY}
         echo ${GITHUB_REF}
+        if [ "workflow_dispatch" = ${GITHUB_EVENT_NAME} ]; then
+          echo "workflow_dispatch!!!"
+        fi
+        if [ "schedule" = ${GITHUB_EVENT_NAME} ]; then
+          echo "schedule!!!"
+        fi
