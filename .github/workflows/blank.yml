@@ -13,6 +13,9 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs:
+      ENV: steps.variables.outputs.env
+      BRANCH: steps.variables.outputs.branch
 
     steps:
       - name: Set variables
@@ -33,9 +36,9 @@ jobs:
     needs:
       - setup
     env:
-      GITHUB_REF: ${{ needs.setup.outputs.branch }}
-      BRANCH: ${{ needs.setup.outputs.branch }}
-      ENV: ${{ needs.setup.outputs.env }}
+      GITHUB_REF: ${{ needs.setup.outputs.BRANCH }}
+      BRANCH: ${{ needs.setup.outputs.BRANCH }}
+      ENV: ${{ needs.setup.outputs.ENV }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
