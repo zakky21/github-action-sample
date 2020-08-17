@@ -11,10 +11,31 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set variables
+        id: variables
+        run: |
+          BRANCH=${GITHUB_REF}
+          if [ "schedule" = ${GITHUB_EVENT_NAME} ]; then
+            BRANCH="refs/heads/staging"
+          fi
+          ENV=${BRANCH##*/}
+          echo "::set-output name=env::${ENV}"
+          echo "::set-output name=branch::${BRANCH}"
+
+# This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    needs:
+      - setup
+    env:
+      GITHUB_REF: ${{ needs.setup.outputs.branch }}
+      BRANCH: ${{ needs.setup.outputs.branch }}
+      ENV: ${{ needs.setup.outputs.env }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -23,6 +44,9 @@ jobs:
 
     - name: Run a multi-line script
       run: |
+        echo ${GITHUB_REF}
+        echo ${BRANCH}
+        echo ${ENV}
         echo ${GITHUB_EVENT_NAME}
         echo ${GITHUB_EVENT_PATH}
         echo ${GITHUB_WORKSPACE}
