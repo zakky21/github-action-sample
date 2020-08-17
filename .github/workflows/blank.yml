@@ -14,8 +14,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      ENV: steps.variables.outputs.env
-      BRANCH: steps.variables.outputs.branch
+      ENV: ${{ steps.variables.outputs.env }}
+      BRANCH: ${{ steps.variables.outputs.branch }}
 
     steps:
       - name: Set variables
