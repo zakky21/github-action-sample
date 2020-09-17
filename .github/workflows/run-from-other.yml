@@ -2,7 +2,7 @@ name: run from Other workflow
 on:
   workflow_run:
     workflows: ["First workflow"]
-    branches: [staging]
+    branches: [master]
     types: 
       - completed
 
@@ -12,3 +12,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: staging
