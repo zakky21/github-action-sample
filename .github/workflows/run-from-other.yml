@@ -2,7 +2,6 @@ name: run from Other workflow
 on:
   workflow_run:
     workflows: ["First workflow"]
-    branches: [master]
     types: 
       - completed
 
