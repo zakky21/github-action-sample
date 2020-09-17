@@ -1,0 +1,14 @@
+name: run from Other workflow
+on:
+  workflow_run:
+    workflows: ["First workflow"]
+    branches: [staging]
+    types: 
+      - completed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
