@@ -29,6 +29,9 @@ jobs:
   slack:
     name: slack
     runs-on: ubuntu-18.04
+    nedds:
+      - backend-test
+      - frontend-test
     if: always()
 
     steps:
@@ -47,8 +50,8 @@ jobs:
       - name: strategy
         run: echo '${{ toJson(strategy) }}'
 
-      - name: workflow
-        run: echo '${{ toJson(workflow) }}'
+      - name: needs
+        run: echo '${{ toJson(needs) }}'
 
       - name: matrix
         run: echo '${{ toJson(matrix) }}'
