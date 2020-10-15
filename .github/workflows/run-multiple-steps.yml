@@ -29,7 +29,7 @@ jobs:
   slack:
     name: slack
     runs-on: ubuntu-18.04
-    nedds:
+    needs:
       - backend-test
       - frontend-test
     if: always()
