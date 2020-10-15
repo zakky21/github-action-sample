@@ -9,7 +9,7 @@ jobs:
   backend-test:
     name: backend test
     runs-on: ubuntu-18.04
-    if: (startsWith(github.ref, 'refs/heads/snyk-') != true) || (endsWith(github.ref, 'front-only') != true)
+    if: (startsWith(github.ref, 'refs/heads/snyk-') != true) && (endsWith(github.ref, 'front-only') != true)
 
     steps:
       - name: Check out code
@@ -28,7 +28,7 @@ jobs:
   frontend-test:
     name: frontend test
     runs-on: ubuntu-18.04
-    if: (startsWith(github.ref , 'refs/heads/depfu') != true) || (endsWith(github.ref, 'back-only') != true)
+    if: (startsWith(github.ref , 'refs/heads/depfu') != true) && (endsWith(github.ref, 'back-only') != true)
 
     steps:
       - name: Check out code
