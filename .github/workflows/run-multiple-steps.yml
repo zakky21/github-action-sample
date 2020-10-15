@@ -53,7 +53,6 @@ jobs:
       - name: needs
         run: |
           echo '${{ toJson(needs) }}'
-          echo '${{ (needs.backend-test.result == 'success' && needs.frontend-test.result == 'success') ? 'success' : 'failed' }}'
 
       - name: matrix
         run: echo '${{ toJson(matrix) }}'
