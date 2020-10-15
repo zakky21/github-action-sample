@@ -1,0 +1,54 @@
+on:
+  push:
+name: Run test case
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  backend-test:
+    name: backend test
+    runs-on: ubuntu-18.04
+    if: (startsWith(github.ref, 'refs/heads/snyk-') != true) || (endsWith(github.ref, 'front-only') != true)
+
+    steps:
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v2
+
+  frontend-test:
+    name: frontend test
+    runs-on: ubuntu-18.04
+    if: (startsWith(github.ref , 'refs/heads/depfu') != true) || (endsWith(github.ref, 'back-only') != true)
+
+    steps:
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v2
+
+  slack:
+    name: slack
+    runs-on: ubuntu-18.04
+    if: always()
+
+    steps:
+      - name: github
+        run: echo '${{ toJson(github) }}'
+
+      - name: job
+        run: echo '${{ toJson(job) }}'
+
+      - name: steps
+        run: echo '${{ toJson(steps) }}'
+
+      - name: runner
+        run: echo '${{ toJson(runner) }}'
+
+      - name: strategy
+        run: echo '${{ toJson(strategy) }}'
+
+      - name: workflow
+        run: echo '${{ toJson(workflow) }}'
+
+      - name: matrix
+        run: echo '${{ toJson(matrix) }}'
