@@ -15,12 +15,17 @@ jobs:
           depfu=false
           security=false
           IFS=$'\n';for label in $(gh pr view ${{ github.event.pull_request.html_url }} --json labels --jq ".labels[].name"); do
+            echo "label:#{label}"
             if [ ${label} = "depfu" ]; then
+              echo "depfu->true"
               depfu=true
             elif [ ${label} = "security" ]; then
+              echo "security->true"
               security=true
             fi
           done
+          echo "depfu:#{depfu}"
+          echo "security:#{security}"
           echo "::set-output name=IS_DEPFU::${depfu}"
           echo "::set-output name=IS_SECURITY::${security}"
         env:
