@@ -49,8 +49,8 @@ jobs:
               icon_emoji: ':rotating_light:',
               attachments: [{
                 color: 'danger',
-                title: 'セキュリティアップデート',
-                text: '@okazaki セキュリティアップデートが作成されました',
+                title: '@okazaki セキュリティアップデート',
+                text: 'セキュリティアップデートが作成されました',
                 fields: [{
                   title: '${{ github.event.pull_request.title }}',
                   value: '${{ github.event.pull_request.html_url }}',
