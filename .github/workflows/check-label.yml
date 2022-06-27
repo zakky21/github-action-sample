@@ -14,3 +14,12 @@ jobs:
     steps:
     - name: echo context
       run: echo '${{ toJSON(github) }}'
+
+    - name: echo context
+      run: |
+        url = ${{ github.event.pull_request.html_url }}
+        echo 'url:${url}'
+        pr = %(gh pr view ${url})
+        echo 'pr:${pr}'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
