@@ -17,9 +17,9 @@ jobs:
           depfu=false
           security=false
           IFS=$'\n';for label in $(gh pr view ${{ github.event.pull_request.html_url }} --json labels --jq ".labels[].name"); do
-            if [ ${label}="depfu" ]; then
+            if [ ${label} = "depfu" ]; then
               depfu=true
-            elif [ ${label}="security" ]; then
+            elif [ ${label} = "security" ]; then
               security=true
             fi
           done
@@ -30,7 +30,7 @@ jobs:
 
       - name: auto merge
         if: ${{ steps.labels.outputs.IS_DEPFU == true }} && ${{ steps.labels.outputs.IS_SECURITY == false }}
-        run: gh pr merge ${{ github.event.pull_request.html_url }}
+        run: gh pr merge ${{ github.event.pull_request.html_url }} --merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -42,7 +42,7 @@ jobs:
           custom_payload: |
             {
               username: 'depfu',
-              channel: 'dev-notifications'
+              channel: 'dev'
               icon_emoji: ':rotating_light:',
               attachments: [{
                 color: '${{ steps.variables.outputs.COLOR }}',
@@ -50,7 +50,7 @@ jobs:
                 text: 'セキュリティアップデートが作成されました',
                 fields: [{
                   title: 'link',
-                  value: '<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>',
+                  value: '${{ github.event.pull_request.html_url }}',
                   short: true
                 }]
               }]
