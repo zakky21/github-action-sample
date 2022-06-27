@@ -29,7 +29,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: auto merge
-        if: ${{ steps.labels.outputs.IS_DEPFU == true }} || ${{ steps.labels.outputs.IS_SECURITY == false }}
+        if: ${{ steps.labels.outputs.IS_DEPFU == true }} && ${{ steps.labels.outputs.IS_SECURITY == false }}
         run: gh pr merge ${{ github.event.pull_request.html_url }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
