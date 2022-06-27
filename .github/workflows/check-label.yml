@@ -1,8 +1,7 @@
-name: Labeler
+name: CheckLabel
 on:
   pull_request:
-    branches:
-      - master
+    types: [opened]
 
 jobs:
   label:
