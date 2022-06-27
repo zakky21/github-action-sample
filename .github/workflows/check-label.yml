@@ -19,9 +19,9 @@ jobs:
       run: |
         url=${{ github.event.pull_request.html_url }}
         echo "url:${url}"
-        pr=$(gh pr view ${url})
+        pr=$(gh pr view ${url} --json)
         echo "pr:${pr}"
-        echo "---"
-        echo ${pr.labels}
+        labels=$(cat ${pr} | jq ".labels")
+        echo "labels:${labels}"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
