@@ -21,7 +21,7 @@ jobs:
         echo "url:${url}"
         pr=$(gh pr view ${url})
         echo "pr:${pr}"
-        echo $url
-        echo $pr
+        echo "---"
+        echo ${pr.labels}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
