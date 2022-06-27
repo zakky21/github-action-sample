@@ -52,7 +52,7 @@ jobs:
                 title: 'セキュリティアップデート',
                 text: 'セキュリティアップデートが作成されました',
                 fields: [{
-                  title: 'link',
+                  title: '${{ github.event.pull_request.title }}',
                   value: '${{ github.event.pull_request.html_url }}',
                   short: true
                 }]
