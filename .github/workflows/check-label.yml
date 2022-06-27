@@ -29,25 +29,31 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: auto merge
-        if: ${{ steps.labels.outputs.IS_DEPFU }} || !${{ steps.labels.outputs.IS_SECURITY }}
-        run: echo 'Auto merge OK!'
-        
-      - name: notify security update
-        if: ${{ steps.labels.outputs.IS_SECURITY }}
-        run: echo 'Need notify!'
-
-      - name: auto merge2
-        if: ${{ steps.labels.outputs.IS_DEPFU == 'true' }} || ${{ steps.labels.outputs.IS_SECURITY == 'false' }}
-        run: echo 'Auto merge OK!'
-        
-      - name: notify security update2
-        if: ${{ steps.labels.outputs.IS_SECURITY == 'true' }}
-        run: echo 'Need notify!'
-
-      - name: auto merge3
         if: ${{ steps.labels.outputs.IS_DEPFU == true }} || ${{ steps.labels.outputs.IS_SECURITY == false }}
-        run: echo 'Auto merge OK!'
-        
-      - name: notify security update3
+        run: gh pr merge ${{ github.event.pull_request.html_url }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: notify security update
         if: ${{ steps.labels.outputs.IS_SECURITY == true }}
-        run: echo 'Need notify!'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              username: 'depfu',
+              channel: 'dev'
+              icon_emoji: ':rotating_light:',
+              attachments: [{
+                color: '${{ steps.variables.outputs.COLOR }}',
+                title: 'セキュリティアップデート',
+                text: 'セキュリティアップデートが作成されました',
+                fields: [{
+                  title: 'link',
+                  value: '<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>',
+                  short: true
+                }]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
