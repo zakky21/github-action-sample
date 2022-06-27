@@ -24,21 +24,21 @@ jobs:
               security=true
             fi
           done
-          echo "depfu:#{depfu}"
-          echo "security:#{security}"
+          echo "depfu:${depfu}"
+          echo "security:${security}"
           echo "::set-output name=IS_DEPFU::${depfu}"
           echo "::set-output name=IS_SECURITY::${security}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: auto merge
-        if: ${{ steps.labels.outputs.IS_DEPFU == true && steps.labels.outputs.IS_SECURITY == false }}
+        if: ${{ steps.labels.outputs.IS_DEPFU && !steps.labels.outputs.IS_SECURITY }}
         run: gh pr merge ${{ github.event.pull_request.html_url }} --merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: notify security update
-        if: steps.labels.outputs.IS_SECURITY == true
+        if: ${{ steps.labels.outputs.IS_SECURITY }}
         uses: 8398a7/action-slack@v3
         with:
           status: custom
