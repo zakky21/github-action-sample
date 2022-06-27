@@ -51,11 +51,3 @@ jobs:
       - name: notify security update3
         if: ${{ steps.labels.outputs.IS_SECURITY == true }}
         run: echo 'Need notify!'
-
-      - name: auto merge4
-        if: ${{ steps.labels.outputs.IS_DEPFU == "true" }} || ${{ steps.labels.outputs.IS_SECURITY == "false" }}
-        run: echo 'Auto merge OK!'
-        
-      - name: notify security update3
-        if: ${{ steps.labels.outputs.IS_SECURITY == "true" }}
-        run: echo 'Need notify!'
