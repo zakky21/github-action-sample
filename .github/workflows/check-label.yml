@@ -38,7 +38,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: notify security update
-        if: ${{ steps.labels.outputs.IS_SECURITY == true }}
+        if: steps.labels.outputs.IS_SECURITY == true
         uses: 8398a7/action-slack@v3
         with:
           status: custom
