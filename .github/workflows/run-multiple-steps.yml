@@ -9,22 +9,40 @@ jobs:
   backend-test:
     name: backend test
     runs-on: ubuntu-18.04
-    if: (startsWith(github.ref, 'refs/heads/snyk-') != true) || (endsWith(github.ref, 'front-only') != true)
+    if: (startsWith(github.ref, 'refs/heads/snyk-') != true) && (endsWith(github.ref, 'front-only') != true)
 
     steps:
       - name: Check out code
         id: checkout
         uses: actions/checkout@v2
+
+      - name: echo
+        run: |
+          echo '1:${{ startsWith(github.ref , 'refs/heads/depfu') }}'
+          echo '2:${{ endsWith(github.ref, 'back-only') }}'
+          echo '3:${{ startsWith(github.ref, 'refs/heads/snyk-') }}'
+          echo '4:${{ endsWith(github.ref, 'front-only') }}'
+          echo '5:${{ (startsWith(github.ref, 'refs/heads/snyk-') != true) || (endsWith(github.ref, 'front-only') != true) }}'
+          echo '6:${{ (startsWith(github.ref , 'refs/heads/depfu') != true) || (endsWith(github.ref, 'back-only') != true) }}'
 
   frontend-test:
     name: frontend test
     runs-on: ubuntu-18.04
-    if: (startsWith(github.ref , 'refs/heads/depfu') != true) || (endsWith(github.ref, 'back-only') != true)
+    if: (startsWith(github.ref , 'refs/heads/depfu') != true) && (endsWith(github.ref, 'back-only') != true)
 
     steps:
       - name: Check out code
         id: checkout
         uses: actions/checkout@v2
+
+      - name: echo
+        run: |
+          echo '1:${{ startsWith(github.ref , 'refs/heads/depfu') }}'
+          echo '2:${{ endsWith(github.ref, 'back-only') }}'
+          echo '3:${{ startsWith(github.ref, 'refs/heads/snyk-') }}'
+          echo '4:${{ endsWith(github.ref, 'front-only') }}'
+          echo '5:${{ (startsWith(github.ref, 'refs/heads/snyk-') != true) || (endsWith(github.ref, 'front-only') != true) }}'
+          echo '6:${{ (startsWith(github.ref , 'refs/heads/depfu') != true) || (endsWith(github.ref, 'back-only') != true) }}'
 
   slack:
     name: slack
