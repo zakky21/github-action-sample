@@ -45,7 +45,7 @@ jobs:
           custom_payload: |
             {
               username: 'depfu',
-              channel: 'dev-notifications'
+              channel: 'dev-notifications',
               icon_emoji: ':rotating_light:',
               attachments: [{
                 color: 'danger',
