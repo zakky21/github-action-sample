@@ -42,7 +42,7 @@ jobs:
           custom_payload: |
             {
               username: 'depfu',
-              channel: 'dev'
+              channel: 'dev-notifications'
               icon_emoji: ':rotating_light:',
               attachments: [{
                 color: '${{ steps.variables.outputs.COLOR }}',
