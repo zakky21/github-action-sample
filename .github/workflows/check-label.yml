@@ -1,27 +1,37 @@
-name: CheckLabel
+name: PR auto merge & notify security update
 on:
   pull_request:
     types: [opened, reopened, labeled]
 
 jobs:
   label:
-
     runs-on: ubuntu-20.04
     permissions:
       contents: read
       pull-requests: write
 
     steps:
-    - name: echo context
-      run: echo '${{ toJSON(github) }}'
+      - name: check labels
+        id: labels
+        run: |
+          depfu=false
+          security=false
+          IFS=$'\n';for label in $(gh pr view ${{ github.event.pull_request.html_url }} --json labels --jq ".labels[].name"); do
+            if [ ${label}="depfu" ]; then
+              depfu=true
+            elif [ ${label}="security" ]; then
+              security=true
+            fi
+          done
+          echo "::set-output name=IS_DEPFU::${depfu}"
+          echo "::set-output name=IS_SECURITY::${security}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: echo context
-      run: |
-        url=${{ github.event.pull_request.html_url }}
-        echo "url:${url}"
-        pr=$(gh pr view ${url} --json)
-        echo "pr:${pr}"
-        labels=$(cat ${pr} | jq ".labels")
-        echo "labels:${labels}"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: auto merge
+        if: ${{ steps.labels.outputs.IS_DEPFU }} || !${{ steps.labels.outputs.IS_SECURITY }}
+        run: echo 'Auto merge OK!'
+        
+      - name: notify security update
+        if: ${{ steps.labels.outputs.IS_SECURITY }}
+        run: echo 'Need notify!'
