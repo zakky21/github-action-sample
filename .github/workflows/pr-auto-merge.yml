@@ -36,13 +36,13 @@ jobs:
           echo "targets:${targets}"
           echo "start auto merge->>>>"
           # auto merge
-          IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | (.security|not) and .status.conclusion == "SUCCESS")) | .[].branch' ); do
+          IFS=$'\n';for b in $(echo $targets | jq -r 'map(. | select(. | (.security|not) and .status.conclusion == "SUCCESS")) | .[].branch' ); do
             gh pr merge ${b} --merge
           done
 
           echo "start change base->>>>"
           # change base(security)
-          IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | .security)) | .[].branch' ); do
+          IFS=$'\n';for b in $(echo $targets | jq -r 'map(. | select(. | .security)) | .[].branch' ); do
             gh pr edit ${b} --base master
           done
 
