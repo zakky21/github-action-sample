@@ -48,10 +48,10 @@ jobs:
 
           echo "start notification(security)->>>>"
           # slack notification(security)
-          slack_security=$(echo $targets | jq 'map(. | select(. | .security)) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
+          slack_security=$(echo $targets | jq -c 'map(. | select(. | .security)) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
           echo "start notification(ci failed)->>>>"
           # slack notification(ci failed)
-          slack_ci_failed=$(echo $targets | jq 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
+          slack_ci_failed=$(echo $targets | jq -c 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
           echo "slack_security::${slack_security}"
           echo "slack_ci_failed::${slack_ci_failed}"
           echo "::set-output name=slack_security::${slack_security}"
