@@ -1,5 +1,7 @@
 name: PR auto merge & notify security update
 on:
+  schedule:
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -8,6 +10,10 @@ jobs:
     permissions: write-all
 
     steps:
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v2
+        
       - name: check pull requests
         id: pr
         run: |
