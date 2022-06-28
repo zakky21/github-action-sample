@@ -48,13 +48,52 @@ jobs:
 
           echo "start notification(security)->>>>"
           # slack notification(security)
-          slack_security=$(echo $targets | jq 'map(. | select(. | .security)) | map({ title: .title, value: .url})')
+          slack_security=$(echo $targets | jq 'map(. | select(. | .security)) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
           echo "start notification(ci failed)->>>>"
           # slack notification(ci failed)
-          slack_ci_failed=$(echo $targets | jq 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})')
+          slack_ci_failed=$(echo $targets | jq 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
           echo "slack_security::${slack_security}"
           echo "slack_ci_failed::${slack_ci_failed}"
           echo "::set-output name=slack_security::${slack_security}"
           echo "::set-output name=slack_ci_failed::${slack_ci_failed}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: notify security update
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              username: 'depfu',
+              channel: 'dev-notifications',
+              icon_emoji: ':rotating_light:',
+              attachments: [{
+                color: 'danger',
+                title: 'SECURITY UPDATE',
+                text: 'セキュリティアップデートが作成されました',
+                fields: ${{ steps.pr.outputs.slack_security }}
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_STREAM }}
+
+      - name: notify ci failed
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              username: 'depfu',
+              channel: 'dev-notifications',
+              icon_emoji: ':rotating_light:',
+              attachments: [{
+                color: 'danger',
+                title: 'CI FAILED',
+                text: 'CIが転んでます',
+                fields: ${{ steps.pr.outputs.slack_ci_failed }}
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_STREAM }}
+
