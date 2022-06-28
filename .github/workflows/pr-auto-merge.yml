@@ -1,7 +1,7 @@
 name: PR auto merge & notify security update
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -33,19 +33,23 @@ jobs:
           EOS
           `
           targets=$(gh pr list --json labels,url,title,baseRefName,headRefName,statusCheckRollup --jq "${query}")
-
+          echo "targets:${targets}"
+          echo "start auto merge->>>>"
           # auto merge
           IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | (.security|not) and .status.conclusion == "SUCCESS")) | .[].branch' ); do
             gh pr merge ${b} --merge
           done
 
+          echo "start change base->>>>"
           # change base(security)
           IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | .security)) | .[].branch' ); do
             gh pr edit ${b} --base master
           done
 
+          echo "start notification(security)->>>>"
           # slack notification(security)
           slack_security=$(echo $targets | jq 'map(. | select(. | .security)) | map({ title: .title, value: .url})')
+          echo "start notification(ci failed)->>>>"
           # slack notification(ci failed)
           slack_ci_failed=$(echo $targets | jq 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})')
           echo "slack_security::${slack_security}"
