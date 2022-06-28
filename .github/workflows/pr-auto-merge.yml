@@ -1,0 +1,50 @@
+name: PR auto merge & notify security update
+on:
+  workflow_dispatch:
+
+jobs:
+  label:
+    runs-on: ubuntu-20.04
+    permissions: write-all
+
+    steps:
+      - name: check pull requests
+        id: pr
+        run: |
+          #depfuラベルが付いたPRだけを抽出しつつ、必要な情報を取得する
+          query=`cat << EOS
+          map(select(.labels[] | any(.;.name == "depfu"))) |
+          map(
+            {
+              url: .url,
+              branch: .headRefName,
+              base: .baseRefName,
+              title: .title,
+              security: any(.labels[]; .name == "security"),
+              status: (.statusCheckRollup[] | select(. | .name == "frontend test"))
+            }
+          )
+          EOS
+          `
+          targets=$(gh pr list --json labels,url,title,baseRefName,headRefName,statusCheckRollup --jq "${query}")
+
+          # auto merge
+          IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | (.security|not) and .status.conclusion == "SUCCESS")) | .[].branch' ); do
+            gh pr merge ${b} --merge
+          done
+
+          # change base(security)
+          IFS=$'\n';for b in $(echo $targets | jq 'map(. | select(. | .security)) | .[].branch' ); do
+            gh pr edit ${b} --base master
+          done
+
+          # slack notification(security)
+          slack_security=$(echo $targets | jq 'map(. | select(. | .security)) | map({ title: .title, value: .url})')
+          # slack notification(ci failed)
+          slack_ci_failed=$(echo $targets | jq 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})')
+          echo "slack_security::${slack_security}"
+          echo "slack_ci_failed::${slack_ci_failed}"
+          echo "::set-output name=slack_security::${slack_security}"
+          echo "::set-output name=slack_ci_failed::${slack_ci_failed}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
