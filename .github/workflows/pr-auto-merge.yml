@@ -59,6 +59,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: check pull requests
+        id: debug
+        run: |
+          echo "slack_security------------------------"
+          echo "${{ steps.pr.outputs.slack_security }}"
+          echo "slack_ci_failed-----------------------"
+          echo "${{ steps.pr.outputs.slack_ci_failed }}"
+
       - name: notify security update
         uses: 8398a7/action-slack@v3
         with:
