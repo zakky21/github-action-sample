@@ -96,7 +96,7 @@ jobs:
                 color: 'danger',
                 title: 'cabernet UNMERGED',
                 text: '自動マージできなかったもの（存在しない場合は空になります）',
-                fields: ${{ steps.pr.outputs.slack_merged }}
+                fields: ${{ steps.pr.outputs.slack_unmerged }}
               }]
             }
         env:
