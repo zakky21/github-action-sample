@@ -1,7 +1,5 @@
-name: PR auto merge & notify security update
+name: PR auto merge
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,96 +10,91 @@ jobs:
     steps:
       - name: Check out code
         id: checkout
-        uses: actions/checkout@v2
-        
+        uses: actions/checkout@v3
+        with:
+          ref: master
+
       - name: check pull requests
         id: pr
         run: |
           #depfuラベルが付いたPRだけを抽出しつつ、必要な情報を取得する
           query=`cat << EOS
-          map(select(.labels[] | any(.;.name == "depfu"))) |
+          map(select(.labels | any(.[];.name == "depfu"))) |
+          map(select(.labels | all(.[];.name != "レビュー待ち"))) |
+          map(select(.labels | all(.[];.name != "WIP"))) |
           map(
             {
               url: .url,
               branch: .headRefName,
               base: .baseRefName,
               title: .title,
-              security: any(.labels[]; .name == "security"),
+              mergeable: (.mergeable == "MERGEABLE"),
               status: (.statusCheckRollup[] | select(. | .name == "frontend test"))
             }
           )
           EOS
           `
-          targets=$(gh pr list --json labels,url,title,baseRefName,headRefName,statusCheckRollup --jq "${query}")
-          echo "targets:${targets}"
-          echo "start auto merge->>>>"
+          targets=$(gh pr list --json labels,url,title,baseRefName,headRefName,statusCheckRollup,mergeable --jq "${query}")
+
           # auto merge
-          IFS=$'\n';for b in $(echo $targets | jq -r 'map(. | select(. | (.security|not) and .status.conclusion == "SUCCESS")) | .[].branch' ); do
-            gh pr merge ${b} --merge
+          merged='[]'
+          unmerged='[]'
+          IFS=$'\n';for t in $(echo $targets | jq -r); do
+            mergeable=$(echo $t | jq '(.mergeable and .status.conclusion == "SUCCESS")')
+            param=$(echo $t | jq '{ title: .title, value: .url }')
+            if [ mergeable = true ]; then
+              gh pr merge ${b} --merge
+              merged=$(echo ${unmerged} | jq '. |= .+[${param}]')
+            else
+              unmerged=$(echo ${unmerged} | jq '. |= .+[${param}]')
+            fi
           done
+          
+          # slack notification(auto merged)
+          slack_merged=$(echo $merged | sed -r 's/"(title|value)"/\1/g')
 
-          echo "start change base->>>>"
-          # change base(security)
-          IFS=$'\n';for b in $(echo $targets | jq -r 'map(. | select(. | .security)) | .[].branch' ); do
-            gh pr edit ${b} --base master
-          done
-
-          echo "start notification(security)->>>>"
-          # slack notification(security)
-          slack_security=$(echo $targets | jq -c 'map(. | select(. | .security)) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
-          echo "start notification(ci failed)->>>>"
           # slack notification(ci failed)
-          slack_ci_failed=$(echo $targets | jq -c 'map(. | select(. | .status.conclusion == "FAILED")) | map({ title: .title, value: .url})' | sed -r 's/"(title|value)"/\1/g')
-          echo "slack_security::${slack_security}"
-          echo "slack_ci_failed::${slack_ci_failed}"
-          echo "::set-output name=slack_security::${slack_security}"
-          echo "::set-output name=slack_ci_failed::${slack_ci_failed}"
+          slack_unmerged=$(echo $unmerged | sed -r 's/"(title|value)"/\1/g')
+
+          echo "::set-output name=slack_merged::${slack_merged}"
+          echo "::set-output name=slack_unmerged::${slack_unmerged}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: check pull requests
-        id: debug
-        run: |
-          echo "slack_security------------------------"
-          echo "${{ steps.pr.outputs.slack_security }}"
-          echo "slack_ci_failed-----------------------"
-          echo "${{ steps.pr.outputs.slack_ci_failed }}"
-
-      - name: notify security update
+      - name: notify merged
         uses: 8398a7/action-slack@v3
         with:
           status: custom
           custom_payload: |
             {
               username: 'depfu',
-              channel: 'dev-notifications',
-              icon_emoji: ':rotating_light:',
+              channel: 'dev-stream',
+              icon_emoji: ':kawauso:',
               attachments: [{
-                color: 'danger',
-                title: 'SECURITY UPDATE',
-                text: 'セキュリティアップデートが作成されました',
-                fields: ${{ steps.pr.outputs.slack_security }}
+                color: 'good',
+                title: 'cabernet AUTO MERGED',
+                text: '自動マージできたもの（存在しない場合は空になります）',
+                fields: ${{ steps.pr.outputs.slack_merged }}
               }]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_STREAM }}
 
-      - name: notify ci failed
+      - name: notify unmerged
         uses: 8398a7/action-slack@v3
         with:
           status: custom
           custom_payload: |
             {
               username: 'depfu',
-              channel: 'dev-notifications',
-              icon_emoji: ':rotating_light:',
+              channel: 'dev-stream',
+              icon_emoji: ':kawauso:',
               attachments: [{
                 color: 'danger',
-                title: 'CI FAILED',
-                text: 'CIが転んでます',
-                fields: ${{ steps.pr.outputs.slack_ci_failed }}
+                title: 'cabernet UNMERGED',
+                text: '自動マージできなかったもの（存在しない場合は空になります）',
+                fields: ${{ steps.pr.outputs.slack_merged }}
               }]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_STREAM }}
-
