@@ -40,6 +40,7 @@ jobs:
           merged='[]'
           unmerged='[]'
           IFS=$'\n';for t in $(echo $targets | jq -r); do
+            echo "t:${t}"
             mergeable=$(echo $t | jq '(.mergeable and .status.conclusion == "SUCCESS")')
             echo "mergeable:${mergeable}"
             param=$(echo $t | jq '{ title: .title, value: .url }')
