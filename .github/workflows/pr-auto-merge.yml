@@ -35,16 +35,18 @@ jobs:
           EOS
           `
           targets=$(gh pr list --json labels,url,title,baseRefName,headRefName,statusCheckRollup,mergeable --jq "${query}")
-
+          echo "targets:${targets}"
           # auto merge
           merged='[]'
           unmerged='[]'
           IFS=$'\n';for t in $(echo $targets | jq -r); do
             mergeable=$(echo $t | jq '(.mergeable and .status.conclusion == "SUCCESS")')
+            echo "mergeable:${mergeable}"
             param=$(echo $t | jq '{ title: .title, value: .url }')
+            echo "param:${param}"
             if [ mergeable = true ]; then
               gh pr merge ${b} --merge
-              merged=$(echo ${unmerged} | jq '. |= .+[${param}]')
+              merged=$(echo ${merged} | jq '. |= .+[${param}]')
             else
               unmerged=$(echo ${unmerged} | jq '. |= .+[${param}]')
             fi
