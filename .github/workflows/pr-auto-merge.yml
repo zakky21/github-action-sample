@@ -39,7 +39,7 @@ jobs:
           # auto merge
           merged='[]'
           unmerged='[]'
-          IFS=$'\n';for t in $(echo $targets | jq -r); do
+          IFS=$'\n';for t in $(echo $targets | jq -c '.[]'); do
             echo "t:${t}"
             mergeable=$(echo $t | jq '(.mergeable and .status.conclusion == "SUCCESS")')
             echo "mergeable:${mergeable}"
