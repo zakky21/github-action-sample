@@ -43,7 +43,7 @@ jobs:
             echo "t:${t}"
             mergeable=$(echo $t | jq '(.mergeable and .status.conclusion == "SUCCESS")')
             echo "mergeable:${mergeable}"
-            param=$(echo $t | jq '{ title: .title, value: .url }')
+            param=$(echo $t | jq -c '{ title: .title, value: .url }')
             echo "param:${param}"
             if [ mergeable = true ]; then
               gh pr merge ${b} --merge
