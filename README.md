@@ -1,2 +1,3 @@
 # github-action-sample
-GithubAction勉強用
+
+GithubAction 勉強用
