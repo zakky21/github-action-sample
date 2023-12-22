@@ -1,5 +1,4 @@
 console.log("start scripts")
-console.log('process.env', process.env)
-console.log('Object.keys(process.env)', Object.keys(process.env))
-console.log('process.env("INPUT_REPO")', process.env("INPUT_REPO"))
-console.log('process.env("GITHUB_EVENT_BEFORE")', process.env("GITHUB_EVENT_BEFORE"))
+Object.keys(process.env).forEach(key => {
+  console.log(key, process.env[key])
+})
