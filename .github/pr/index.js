@@ -1,5 +1,5 @@
 const fs = require('fs')
-// const https = require('https')
+const https = require('https')
 
 console.log("start scripts")
 Object.keys(process.env).forEach(key => {
@@ -9,7 +9,7 @@ Object.keys(process.env).forEach(key => {
 console.log("read file...>>>>")
 console.log(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH)))
 
-function get() {
+// function get() {
 //   return new Promise((resolve, reject) => {
 //     const { GITHUB_API_URL, GITHUB_REPOSITORY } = process.env
 //     const req = https.request({
