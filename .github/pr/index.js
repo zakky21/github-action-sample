@@ -25,7 +25,8 @@ function get() {
       headers: {
         'Accept': 'application/vnd.github.v3.diff',
         Authorization: `token ${INPUT_TOKEN}`,
-        // 'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'YourApp',
       },
       timeout: 5000
     }, res => {
