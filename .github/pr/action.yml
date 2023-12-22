@@ -3,18 +3,14 @@ runs:
   using: "node20"
   main: "index.js"
 inputs:
-  REPO:
-    description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
+  TOKEN:
+    description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: false
-    default: "${{ github.repository }}"
-  # EVENT:
-  #   description: "The SHA of the last pushed commit (automatically set)"
+    default: ${{ github.token }}
+  # REPO:
+  #   description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
   #   required: false
-  #   default: "${{ github.event }}"
-  # BEFORE:
-  #   description: "The SHA of the last pushed commit (automatically set)"
-  #   required: false
-  #   default: "${{ github.event.before }}"
+  #   default: "${{ github.repository }}"
 #   BEFORE:
 #     description: "The SHA of the last pushed commit (automatically set)"
 #     required: false
