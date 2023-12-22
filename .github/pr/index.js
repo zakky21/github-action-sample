@@ -5,4 +5,4 @@ Object.keys(process.env).forEach(key => {
   console.log(key, process.env[key])
 })
 
-console.log(fs.readFileSync(process.env.GITHUB_EVENT_PATH))
+console.log(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH)))
