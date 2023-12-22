@@ -1,4 +1,4 @@
-const { Toolkit } = require('actions-toolkit');
+// const { Toolkit } = require('actions-toolkit');
 const fs = require('fs')
 const https = require('https')
 
@@ -55,14 +55,13 @@ function get() {
   })
 }
 
-Toolkit.run(async tools => {
+// const response = await get()
+// console.log("response", response)
+
+async function run() {
+  console.log('called RUN!!!')
   const response = await get()
   console.log("response", response)
-})
-
-// async function callAPI() {
-//   const response = await get()
-//   console.log("response", response)
-// }
+}
 
 // callAPI()
