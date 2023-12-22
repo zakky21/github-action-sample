@@ -51,7 +51,7 @@ function get() {
       req.destroy();
       reject(Error('timeout'));
     })
-    req.on('error', () => { console.log('error2'); })
+    req.on('error', (e, a, b, c) => { console.log('error2', e, a, b, c); })
     req.end();
   })
 }
