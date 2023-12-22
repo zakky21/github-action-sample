@@ -1,0 +1,5 @@
+console.log("start scripts")
+console.log(env, process.env)
+console.log(env, Object.keys(process.env))
+console.log(env, process.env("INPUT_REPO"))
+console.log(env, process.env("GITHUB_EVENT_BEFORE"))

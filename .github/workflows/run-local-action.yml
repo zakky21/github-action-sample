@@ -1,0 +1,12 @@
+name: run local action
+on: pull_request
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    name: run local action
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: run pull request
+        uses: ./.github/pr/
