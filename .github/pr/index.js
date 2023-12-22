@@ -9,7 +9,7 @@ Object.keys(process.env).forEach(key => {
 console.log("read file...>>>>")
 console.log(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH)))
 
-const { GITHUB_API_URL, GITHUB_REPOSITORY, GITHUB_HEAD_REF } = process.env
+const { GITHUB_API_URL, GITHUB_REPOSITORY, GITHUB_BASE_REF, GITHUB_HEAD_REF } = process.env
 // const req = https.request(
 console.log({
   hostname: GITHUB_API_URL,
