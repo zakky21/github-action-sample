@@ -7,6 +7,14 @@ inputs:
     description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
     required: false
     default: "${{ github.repository }}"
+  EVENT:
+    description: "The SHA of the last pushed commit (automatically set)"
+    required: false
+    default: "${{ github.event }}"
+  BEFORE:
+    description: "The SHA of the last pushed commit (automatically set)"
+    required: false
+    default: "${{ github.event.before }}"
 #   BEFORE:
 #     description: "The SHA of the last pushed commit (automatically set)"
 #     required: false
