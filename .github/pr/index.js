@@ -17,6 +17,7 @@ const https = require('https')
 // })
 
 function getDiff() {
+  const { GITHUB_API_URL, GITHUB_REPOSITORY, GITHUB_BASE_REF, GITHUB_HEAD_REF, INPUT_TOKEN } = process.env
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: GITHUB_API_URL.replace("https://", ""),
