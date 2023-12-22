@@ -64,4 +64,5 @@ async function run() {
   console.log("response", response)
 }
 
+run()
 // callAPI()
