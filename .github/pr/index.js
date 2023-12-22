@@ -19,7 +19,7 @@ console.log({
 function get() {
   return new Promise((resolve, reject) => {
     const req = https.request({
-      hostname: GITHUB_API_URL,
+      hostname: GITHUB_API_URL.replace("https://", ""),
       path: `repo/${GITHUB_REPOSITORY}/compare/${GITHUB_BASE_REF}...${GITHUB_HEAD_REF}`,
       method: 'GET',
       headers: {
