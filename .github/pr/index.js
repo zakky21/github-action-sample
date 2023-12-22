@@ -16,45 +16,45 @@ console.log({
   path: `repo/${GITHUB_REPOSITORY}/compare/${GITHUB_BASE_REF}...${GITHUB_HEAD_REF}`,
 })
 
-function get() {
-  return new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname: GITHUB_API_URL,
-      path: `repo/${GITHUB_REPOSITORY}/compare/${GITHUB_BASE_REF}...${GITHUB_HEAD_REF}`,
-      method: 'GET',
-      headers: {
-        'Accept': 'application/vnd.github.v3.diff',
-        Authorization: `token ${INPUT_TOKEN}`,
-        // 'Content-Type': 'application/json',
-      },
-      timeout: 5000
-    }, res => {
-      let chunks = [];
-      res.on('data', chunk => { console.log('data', chunk); chunks.push(chunk); })
-      res.on('end', () => {
-        console.log('end');
-        const resb = Buffer.concat(chunks).toString();
-        try {
-          console.log("response", resb)
-          const json = JSON.parse(resb);
-          console.log("response-json", json)
-          resolve(json);
-        } catch (e) {
-          console.error(e);
-          reject(e);
-        }
-      });
-      res.on('error', err => { console.log('error'); reject(err) })
-    });
-    req.on('timeout', () => {
-      log('timeout');
-      req.destroy();
-      reject(Error('timeout'));
-    })
-    req.on('error', () => { log('error2'); })
-    req.end();
-  })
-}
+// function get() {
+//   return new Promise((resolve, reject) => {
+//     const req = https.request({
+//       hostname: GITHUB_API_URL,
+//       path: `repo/${GITHUB_REPOSITORY}/compare/${GITHUB_BASE_REF}...${GITHUB_HEAD_REF}`,
+//       method: 'GET',
+//       headers: {
+//         'Accept': 'application/vnd.github.v3.diff',
+//         Authorization: `token ${INPUT_TOKEN}`,
+//         // 'Content-Type': 'application/json',
+//       },
+//       timeout: 5000
+//     }, res => {
+//       let chunks = [];
+//       res.on('data', chunk => { console.log('data', chunk); chunks.push(chunk); })
+//       res.on('end', () => {
+//         console.log('end');
+//         const resb = Buffer.concat(chunks).toString();
+//         try {
+//           console.log("response", resb)
+//           const json = JSON.parse(resb);
+//           console.log("response-json", json)
+//           resolve(json);
+//         } catch (e) {
+//           console.error(e);
+//           reject(e);
+//         }
+//       });
+//       res.on('error', err => { console.log('error'); reject(err) })
+//     });
+//     req.on('timeout', () => {
+//       log('timeout');
+//       req.destroy();
+//       reject(Error('timeout'));
+//     })
+//     req.on('error', () => { log('error2'); })
+//     req.end();
+//   })
+// }
 
 // // const response = await get()
 // // console.log("response", response)
@@ -67,7 +67,8 @@ function aaaaa() {
 
 async function run() {
   console.log('called RUN!!!')
-  const response = await get()
+  const response = await aaaaa()
+  // const response = await get()
   console.log("response", response)
 }
 
