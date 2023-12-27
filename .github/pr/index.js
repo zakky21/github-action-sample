@@ -41,20 +41,21 @@ function commentPR({ a, b, lines }) {
   })
 }
 
-function parseDiff(str) {
+async function parseDiff(str) {
   if (!/^\+.*(TODO|FIXME)/m.test(str)) return
 
+  const todos = []
   let current = {};
   str.split('\n').forEach(s => {
     if (/^diff --git/.test(s)) {
-      if (current.found) commentPR(current)
+      if (current.found) todos.push(current)
       current = { lines: [] }
     } else if (/^---/.test(s)) {
       current.a = s
     } else if (/^\+\+\+/.test(s)) {
       current.b = s
     } else if (/^@@.*@@/.test(s)) {
-      if (current.found) commentPR(current)
+      if (current.found) todos.push(current)
       current.lines = [s]
     } else {
       if (/^\+.*(TODO|FIXME)/.test(s)) {
@@ -63,7 +64,12 @@ function parseDiff(str) {
       current.lines.push(s)
     }
   })
-  if (current.found) commentPR(current)
+  if (current.found) todos.push(current)
+  if (todos.length) {
+    for (let todo in todos) {
+      await commentPR(todo)
+    }
+  }
 }
 
 function getDiff() {
@@ -103,4 +109,4 @@ async function run() {
 
 run()
 
-// TODO こいつをひっかけたい
+// TODO こいつをひっかけたいぞ
