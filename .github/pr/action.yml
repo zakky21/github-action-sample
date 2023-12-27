@@ -7,6 +7,11 @@ inputs:
     description: "The GitHub access token to allow us to retrieve, create and update issues (automatically set)"
     required: false
     default: ${{ github.token }}
+  COMMENT_URL:
+    description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
+    required: false
+    default: "${{ github.event.pull_request.commits_url }}"
+
   # REPO:
   #   description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
   #   required: false

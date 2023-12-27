@@ -2,11 +2,11 @@ const https = require('https')
 
 function commentPR({ a, b, lines }) {
   console.log(a, b, lines)
-  const { GITHUB_API_URL, pull_request: { comments_url } } = process.env
+  const { GITHUB_API_URL, INPUT_COMMENT_URL } = process.env
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: GITHUB_API_URL.replace("https://", ""),
-      path: comments_url.replace(GITHUB_API_URL, ''),
+      path: INPUT_COMMENT_URL.replace(GITHUB_API_URL, ''),
       method: 'POST',
       headers: {
         'Accept': 'application/vnd.github.v3.diff',
@@ -103,4 +103,4 @@ async function run() {
 
 run()
 
-// TODO こいつをひっかけたい
+// TODO こいつをひっかけたいな
