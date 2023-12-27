@@ -1,8 +1,17 @@
 const https = require('https')
 
-function commentPR({ a, b, lines }) {
+function commentPR(todos) {
   console.log(a, b, lines)
-  const { GITHUB_API_URL, INPUT_COMMENT_URL, INPUT_TOKEN } = process.env
+  const comments = todos.map((a, b, lines) => ```
+    #### ${b}
+    file: ${a} -> ${b}
+    \`\`\`
+    ${lines.join('\n')}
+    \`\`\`
+
+  ```)
+
+  const { GITHUB_API_URL, INPUT_COMMENT_URL, GITHUB_SHA, INPUT_TOKEN } = process.env
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: GITHUB_API_URL.replace("https://", ""),
@@ -28,15 +37,11 @@ function commentPR({ a, b, lines }) {
     })
     req.on('error', (e) => { reject(e) })
     req.end(`
+      ${GITHUB_SHA}
       ### TODOが見つかりました
       以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
 
-      FILE:
-      from: ${a}
-      to: ${b}
-      \`\`\`
-      ${lines.join('\n')}
-      \`\`\`
+      ${comments}
     `)
   })
 }
@@ -65,11 +70,7 @@ async function parseDiff(str) {
     }
   })
   if (current.found) todos.push(current)
-  if (todos.length) {
-    for (let todo of todos) {
-      await commentPR(todo)
-    }
-  }
+  if (todos.length) await commentPR(todos)
 }
 
 function getDiff() {
