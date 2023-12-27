@@ -2,7 +2,7 @@ const https = require('https')
 
 function commentPR({ a, b, lines }) {
   console.log(a, b, lines)
-  const { GITHUB_API_URL, INPUT_COMMENT_URL } = process.env
+  const { GITHUB_API_URL, INPUT_COMMENT_URL, INPUT_TOKEN } = process.env
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: GITHUB_API_URL.replace("https://", ""),
@@ -103,4 +103,4 @@ async function run() {
 
 run()
 
-// TODO こいつをひっかけたいな
+// TODO こいつをひっかけたい
