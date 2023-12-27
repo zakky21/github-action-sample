@@ -66,7 +66,7 @@ async function parseDiff(str) {
   })
   if (current.found) todos.push(current)
   if (todos.length) {
-    for (let todo in todos) {
+    for (let todo of todos) {
       await commentPR(todo)
     }
   }
@@ -109,4 +109,4 @@ async function run() {
 
 run()
 
-// TODO こいつをひっかけたいぞ
+// TODO こいつをひっかけたい
