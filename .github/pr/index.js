@@ -104,9 +104,7 @@ function getDiff() {
 
 async function run() {
   const response = await getDiff()
-  parseDiff(response)
+  await parseDiff(response)
 }
 
 run()
-
-// TODO こいつをひっかけたい
