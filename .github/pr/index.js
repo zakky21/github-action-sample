@@ -2,14 +2,14 @@ const https = require('https')
 
 function commentPR(todos) {
   const comments = todos.map((a, b, lines) => {
-    return ```
+    return `
       #### ${b}
       file: ${a} -> ${b}
       \`\`\`
       ${lines.join('\n')}
       \`\`\`
 
-    ```
+    `
   })
 
   const { GITHUB_API_URL, INPUT_COMMENT_URL, GITHUB_SHA, INPUT_TOKEN } = process.env
