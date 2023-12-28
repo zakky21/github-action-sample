@@ -10,7 +10,7 @@ inputs:
   COMMENT_URL:
     description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
     required: false
-    default: "${{ github.event.pull_request.commits_url }}"
+    default: "${{ github.event.pull_request.comments_url }}"
 
   # REPO:
   #   description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
