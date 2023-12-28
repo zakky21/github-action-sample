@@ -1,7 +1,6 @@
 const https = require('https')
 
 function commentPR(todos) {
-  console.log(a, b, lines)
   const comments = todos.map((a, b, lines) => ```
     #### ${b}
     file: ${a} -> ${b}
@@ -12,6 +11,17 @@ function commentPR(todos) {
   ```)
 
   const { GITHUB_API_URL, INPUT_COMMENT_URL, GITHUB_SHA, INPUT_TOKEN } = process.env
+  console.log({
+    hostname: GITHUB_API_URL.replace("https://", ""),
+    path: INPUT_COMMENT_URL.replace(GITHUB_API_URL, ''),
+    method: 'POST',
+    headers: {
+      'Accept': 'application/vnd.github.v3.diff',
+      Authorization: `token ${INPUT_TOKEN}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'YourApp',
+    }
+  })
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: GITHUB_API_URL.replace("https://", ""),
