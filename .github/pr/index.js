@@ -46,7 +46,7 @@ ${lines.join('\n')}
       body: `
 commit_id: ${INPUT_AFTER}
 
-### TODOが見つかりました
+## TODOが見つかりました
 以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるかなど）を確認してください
 
 ${comments}
