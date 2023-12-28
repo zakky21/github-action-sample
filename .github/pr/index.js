@@ -62,7 +62,7 @@ ${comments}
 // diff（unified形式）からTODOを抽出する
 // NOTE: https://www.gnu.org/software/diffutils/manual/diffutils.html#Unified-Format
 async function parseDiff(str) {
-  const { INPUT_INDEX_BEFORE, INPUT_INDEX_AFTER } = process.env
+  const { INPUT_INDEX_BEFORE, INPUT_INDEX_AFTER, INPUT_IDENTIFIERS } = process.env
   if (!/^[+-].*(TODO|FIXME)/m.test(str)) return
 
   const todos = str.split('\n').reduce((a, s) => {
@@ -83,7 +83,7 @@ async function parseDiff(str) {
       a.current.todos = []
     } else {
       a.current.lines.push(s)
-      if (/^[+-].*(TODO|FIXME)/.test(s)) a.current.todos.push({ index: a.current.lines.length, type: s[0] })
+      if (new RegExp(`^[+-].*(${INPUT_IDENTIFIERS})`).test(s)) a.current.todos.push({ index: a.current.lines.length, type: s[0] })
     }
     return a
   }, { current: { lines: [], todos: [] }, result: [] })
