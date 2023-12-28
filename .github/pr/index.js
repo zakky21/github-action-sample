@@ -45,11 +45,13 @@ function commentPR(todos) {
     })
     req.write(JSON.stringify({
       body: `
+      \`\`\`
       ${GITHUB_SHA}
       ### TODOが見つかりました
       以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
 
       ${comments}
+      \`\`\`
     `}))
     req.on('timeout', () => {
       console.log('timeout')
