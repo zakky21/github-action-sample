@@ -75,14 +75,14 @@ async function parseDiff(str) {
   let current = {};
   str.split('\n').forEach((s, i) => {
     if (/^diff --git/.test(s)) {
-      if (current.found) todos.push(current)
+      if (current.todoLines) todos.push(current)
       current = { lines: [], todoLines: [] }
     } else if (/^---\s/.test(s)) {
       current.a = s.replace(/^---\s/, '')
     } else if (/^\+\+\+\s/.test(s)) {
       current.b = s.replace(/^\+\+\+\s/, '')
     } else if (/^@@.*@@/.test(s)) {
-      if (current.found) todos.push(current)
+      if (current.todoLines) todos.push(current)
     } else {
       if (/^[+-].*(TODO|FIXME)/.test(s)) {
         current.todoLines.push({ index: i, type: s[0] })
@@ -90,7 +90,7 @@ async function parseDiff(str) {
     }
     current.lines.push(s)
   })
-  if (current.found) todos.push(current)
+  if (current.todoLines) todos.push(current)
   if (todos.length) await commentPR(todos)
 }
 
