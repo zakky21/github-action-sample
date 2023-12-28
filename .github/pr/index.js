@@ -2,21 +2,14 @@ const fs = require('fs')
 const https = require('https')
 
 function commentPR(todos) {
-  const comments = todos.map(({ a, b, lines, todoLines }) => {
-
-    const detail = todoLines.map(({ index, type }) => {
-      const l = lines.substring(index - 5 < 0 ? 0 : index - 5, index + 10)
-      return `
-#### TODOが ${type === '+' ? '追加' : '削除'} されました
+  const comments = todos.map(({ b, type, lines }) => {
+    return `
+    ### ${b}
+    #### TODOが ${type === '+' ? '追加' : '削除'} されました
 \`\`\`
-${l.join('\n')}
+${lines.join('\n')}
 \`\`\`
       `
-    })
-    return `
-#### ${b}
-${detail}
-    `
   })
 
   const { GITHUB_API_URL, INPUT_COMMENT_URL, INPUT_AFTER, INPUT_TOKEN } = process.env
@@ -71,27 +64,36 @@ ${comments}
 async function parseDiff(str) {
   if (!/^\+.*(TODO|FIXME)/m.test(str)) return
 
-  const todos = []
-  let current = {};
-  str.split('\n').forEach((s, i) => {
-    if (/^diff --git/.test(s)) {
-      if (current.todoLines) todos.push(current)
-      current = { lines: [], todoLines: [] }
-    } else if (/^---\s/.test(s)) {
-      current.a = s.replace(/^---\s/, '')
+  const todos = str.split('\n').reduce((a, s) => {
+    if (/^---\s/.test(s)) {
+      a.current.a = s.replace(/^---\s/, '')
     } else if (/^\+\+\+\s/.test(s)) {
-      current.b = s.replace(/^\+\+\+\s/, '')
-    } else if (/^@@.*@@/.test(s)) {
-      if (current.todoLines) todos.push(current)
+      a.current.b = s.replace(/^\+\+\+\s/, '')
+    } else if (/^diff --git/.test(s)) { // ファイルの切り替わり
+      console.log('sss1', s, a.current.todos)
+      a.result.push({ ...a.current }) // XXX: object-copyにしてあげないと上手く動かないっぽい
+      a.current = { lines: [], todos: [] }
+    } else if (/^@@.*@@/.test(s)) { // 差分ブロックの切り替わり
+      console.log('sss2', s, a.current.todos)
+      a.result.push({ ...a.current }) // XXX: object-copyにしてあげないと上手く動かないっぽい
+      a.current.lines = []
+      a.current.todos = []
     } else {
-      if (/^[+-].*(TODO|FIXME)/.test(s)) {
-        current.todoLines.push({ index: i, type: s[0] })
-      }
+      a.current.lines.push(s)
+      if (/^[+-].*(TODO|FIXME)/.test(s)) a.current.todos.push({ index: a.current.lines.length, type: s[0] })
     }
-    current.lines.push(s)
-  })
-  if (current.todoLines) todos.push(current)
-  if (todos.length) await commentPR(todos)
+    return a
+  }, { current: { lines: [], todos: [] }, result: [] })
+  todos.result.push(todos.current)
+
+  commentPR(todos.result.map((r) => {
+    return r.todos.map((t) => ({
+      a: r.a,
+      b: r.b,
+      type: t.type,
+      lines: r.lines.slice(t.index - 5 < 0 ? 0 : t.index - 5, t.index + 10),
+    }))
+  }).flat())
 }
 
 function getDiff() {
@@ -126,6 +128,7 @@ function getDiff() {
 
 async function run() {
   const response = await getDiff()
+  // const response = fs.readFileSync('./response.txt').toString()
   await parseDiff(response)
 }
 
