@@ -74,11 +74,11 @@ async function parseDiff(str) {
       a.current.b = s.replace(/^\+\+\+\sb\//, '')
     } else if (/^diff --git/.test(s)) { // ファイルの切り替わり
       console.log('sss1', s, a.current.todos)
-      a.result.push({ ...a.current }) // XXX: object-copyにしてあげないと上手く動かないっぽい
+      a.result.push({ ...a.current })
       a.current = { lines: [], todos: [] }
     } else if (/^@@.*@@/.test(s)) { // 差分ブロックの切り替わり
       console.log('sss2', s, a.current.todos)
-      a.result.push({ ...a.current }) // XXX: object-copyにしてあげないと上手く動かないっぽい
+      a.result.push({ ...a.current })
       a.current.lines = []
       a.current.todos = []
     } else {
@@ -133,13 +133,7 @@ function getDiff() {
 
 async function run() {
   const response = await getDiff()
-  // const response = fs.readFileSync('./response.txt').toString()
   await parseDiff(response)
 }
-
-Object.keys(process.env).forEach(key => {
-  console.log(key, process.env[key])
-})
-console.log(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH)))
 
 run()
