@@ -4,8 +4,8 @@ const https = require('https')
 function commentPR(todos) {
   const comments = todos.map(({ b, type, lines }) => {
     return `
-    ### ${b}
-    #### TODOが ${type === '+' ? '追加' : '削除'} されました
+### ${b}
+#### TODOが ${type === '+' ? '追加' : '削除'} されました
 \`\`\`
 ${lines.join('\n')}
 \`\`\`
@@ -66,10 +66,10 @@ async function parseDiff(str) {
   if (!/^[+-].*(TODO|FIXME)/m.test(str)) return
 
   const todos = str.split('\n').reduce((a, s) => {
-    if (/^---\s/.test(s)) {
-      a.current.a = s.replace(/^---\s/, '')
-    } else if (/^\+\+\+\s/.test(s)) {
-      a.current.b = s.replace(/^\+\+\+\s/, '')
+    if (/^---\sa\//.test(s)) {
+      a.current.a = s.replace(/^---\sa\//, '')
+    } else if (/^\+\+\+\sb\//.test(s)) {
+      a.current.b = s.replace(/^\+\+\+\sb\//, '')
     } else if (/^diff --git/.test(s)) { // ファイルの切り替わり
       console.log('sss1', s, a.current.todos)
       a.result.push({ ...a.current }) // XXX: object-copyにしてあげないと上手く動かないっぽい
