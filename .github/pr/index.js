@@ -22,7 +22,8 @@ ${lines.join('\n')}
       Authorization: `token ${INPUT_TOKEN}`,
       'Content-Type': 'application/json',
       'User-Agent': 'YourApp',
-    }
+    },
+    comments: comments
   })
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -62,7 +63,7 @@ ${comments}
 }
 
 async function parseDiff(str) {
-  if (!/^\[+-].*(TODO|FIXME)/m.test(str)) return
+  if (!/^[+-].*(TODO|FIXME)/m.test(str)) return
 
   const todos = str.split('\n').reduce((a, s) => {
     if (/^---\s/.test(s)) {
@@ -86,14 +87,16 @@ async function parseDiff(str) {
   }, { current: { lines: [], todos: [] }, result: [] })
   todos.result.push(todos.current)
 
-  commentPR(todos.result.map((r) => {
-    return r.todos.map((t) => ({
-      a: r.a,
-      b: r.b,
-      type: t.type,
-      lines: r.lines.slice(t.index - 5 < 0 ? 0 : t.index - 5, t.index + 10),
-    }))
-  }).flat())
+  commentPR(
+    // console.log(
+    todos.result.map((r) => {
+      return r.todos.map((t) => ({
+        a: r.a,
+        b: r.b,
+        type: t.type,
+        lines: r.lines.slice(t.index - 5 < 0 ? 0 : t.index - 5, t.index + 10),
+      }))
+    }).flat())
 }
 
 function getDiff() {
@@ -129,7 +132,7 @@ function getDiff() {
 async function run() {
   const response = await getDiff()
   // const response = fs.readFileSync('./response.txt').toString()
-  console.log('diff', response)
+  console.log('diff----->>>', response)
   await parseDiff(response)
 }
 
