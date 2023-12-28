@@ -4,11 +4,11 @@ const https = require('https')
 function commentPR(todos) {
   const comments = todos.map(({ a, b, lines }) => {
     return `
-      #### ${b}
-      file: ${a} -> ${b}
-      \`\`\`
-      ${lines.join('\n')}
-      \`\`\`
+#### ${b}
+file: ${a} -> ${b}
+\`\`\`
+${lines.join('\n')}
+\`\`\`
 
     `
   })
@@ -45,13 +45,13 @@ function commentPR(todos) {
     })
     req.write(JSON.stringify({
       body: `
-      \`\`\`
-      ${GITHUB_SHA}
-      ### TODOが見つかりました
-      以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
+\`\`\`
+${GITHUB_SHA}
+### TODOが見つかりました
+以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
 
-      ${comments}
-      \`\`\`
+${comments}
+\`\`\`
     `}))
     req.on('timeout', () => {
       console.log('timeout')
