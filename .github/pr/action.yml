@@ -15,6 +15,18 @@ inputs:
   AFTER:
     required: false
     default: "${{ github.event.after }}"
+  INDEX_BEFORE:
+    required: false
+    default: 5
+  INDEX_AFTER:
+    required: false
+    default: 10
+  IDENTIFIERS:
+    required: false
+    default:
+      - TODO
+      - FIXME
+
     # REPO:
   #   description: "The path to the repository where the action will be used, e.g. 'zakky21/my-repo' (automatically set)"
   #   required: false

@@ -1,16 +1,13 @@
-const fs = require('fs')
 const https = require('https')
 
+// PRにコメントする
 function commentPR(todos) {
-  const comments = todos.map(({ b, type, lines }) => {
-    return `
+  const comments = todos.map(({ b, type, lines }) => `
 ### ${b}
 #### TODOが ${type === '+' ? '追加' : '削除'} されました
 \`\`\`
 ${lines.join('\n')}
-\`\`\`
-      `
-  })
+\`\`\``).join('\n')
 
   const { GITHUB_API_URL, INPUT_COMMENT_URL, INPUT_AFTER, INPUT_TOKEN } = process.env
   console.log({
@@ -62,13 +59,18 @@ ${comments}
   })
 }
 
+// diff（unified形式）からTODOを抽出する
+// NOTE: https://www.gnu.org/software/diffutils/manual/diffutils.html#Unified-Format
 async function parseDiff(str) {
+  const { INPUT_INDEX_BEFORE, INPUT_INDEX_AFTER } = process.env
   if (!/^[+-].*(TODO|FIXME)/m.test(str)) return
 
   const todos = str.split('\n').reduce((a, s) => {
     if (/^---\sa\//.test(s)) {
+      // BEFORE側のファイル名（使ってないが一応取ってる）
       a.current.a = s.replace(/^---\sa\//, '')
     } else if (/^\+\+\+\sb\//.test(s)) {
+      // AFTER側のファイル名
       a.current.b = s.replace(/^\+\+\+\sb\//, '')
     } else if (/^diff --git/.test(s)) { // ファイルの切り替わり
       console.log('sss1', s, a.current.todos)
@@ -88,17 +90,17 @@ async function parseDiff(str) {
   todos.result.push(todos.current)
 
   commentPR(
-    // console.log(
     todos.result.map((r) => {
       return r.todos.map((t) => ({
         a: r.a,
         b: r.b,
         type: t.type,
-        lines: r.lines.slice(t.index - 5 < 0 ? 0 : t.index - 5, t.index + 10),
+        lines: r.lines.slice(t.index - INPUT_INDEX_BEFORE < 0 ? 0 : t.index - INPUT_INDEX_BEFORE, t.index + INPUT_INDEX_AFTER),
       }))
     }).flat())
 }
 
+// 直前のCI実行からのコード差分を取得
 function getDiff() {
   const { GITHUB_API_URL, GITHUB_REPOSITORY, INPUT_BEFORE, INPUT_AFTER, INPUT_TOKEN } = process.env
   return new Promise((resolve, reject) => {
@@ -132,7 +134,6 @@ function getDiff() {
 async function run() {
   const response = await getDiff()
   // const response = fs.readFileSync('./response.txt').toString()
-  console.log('diff----->>>', response)
   await parseDiff(response)
 }
 
