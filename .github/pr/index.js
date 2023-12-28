@@ -1,7 +1,7 @@
 const https = require('https')
 
 function commentPR(todos) {
-  const comments = todos.map((a, b, lines) => {
+  const comments = todos.map(({ a, b, lines }) => {
     return `
       #### ${b}
       file: ${a} -> ${b}
@@ -121,5 +121,10 @@ async function run() {
   const response = await getDiff()
   await parseDiff(response)
 }
+
+Object.keys(process.env).forEach(key => {
+  console.log(key, process.env[key])
+})
+console.log(JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH)))
 
 run()
