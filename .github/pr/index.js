@@ -18,7 +18,7 @@ function commentPR(todos) {
     path: INPUT_COMMENT_URL.replace(GITHUB_API_URL, ''),
     method: 'POST',
     headers: {
-      'Accept': 'application/vnd.github.v3.diff',
+      'Accept': 'application/vnd.github+json',
       Authorization: `token ${INPUT_TOKEN}`,
       'Content-Type': 'application/json',
       'User-Agent': 'YourApp',
@@ -30,7 +30,7 @@ function commentPR(todos) {
       path: INPUT_COMMENT_URL.replace(GITHUB_API_URL, ''),
       method: 'POST',
       headers: {
-        'Accept': 'application/vnd.github.v3.diff',
+        'Accept': 'application/vnd.github+json',
         Authorization: `token ${INPUT_TOKEN}`,
         'Content-Type': 'application/json',
         'User-Agent': 'YourApp',
@@ -42,19 +42,21 @@ function commentPR(todos) {
       res.on('end', () => resolve(Buffer.concat(chunks).toString()))
       res.on('error', err => { reject(err) })
     })
+    req.write({
+      body: `
+      ${GITHUB_SHA}
+      ### TODOが見つかりました
+      以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
+
+      ${comments}
+    `})
     req.on('timeout', () => {
       console.log('timeout')
       req.destroy()
       reject(Error('timeout'))
     })
     req.on('error', (e) => { reject(e) })
-    req.end(`
-      ${GITHUB_SHA}
-      ### TODOが見つかりました
-      以下のTODOコメントの内容に問題がないか（このPR内で解消ができないか、後になって理解ができるか）を確認してください
-
-      ${comments}
-    `)
+    req.end()
   })
 }
 
