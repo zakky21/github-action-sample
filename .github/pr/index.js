@@ -62,7 +62,7 @@ ${comments}
 }
 
 async function parseDiff(str) {
-  if (!/^\+.*(TODO|FIXME)/m.test(str)) return
+  if (!/^\[+-].*(TODO|FIXME)/m.test(str)) return
 
   const todos = str.split('\n').reduce((a, s) => {
     if (/^---\s/.test(s)) {
@@ -129,6 +129,7 @@ function getDiff() {
 async function run() {
   const response = await getDiff()
   // const response = fs.readFileSync('./response.txt').toString()
+  console.log('diff', response)
   await parseDiff(response)
 }
 
